@@ -1,0 +1,6 @@
+{
+  "name": "TechVisions - Soluções Web & Mobile",
+  "description": "Plataforma e catálogo de sistemas de gestão comercial e POS em Moçambique: mercearias, padarias, ferragens, restaurantes e armazéns com M-Pesa, E-Mola e Cartão Visa.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

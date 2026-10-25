@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+@keyframes kineticLetter {
+  0% {
+    opacity: 0;
+    transform: translateY(28px) scale(0.9) rotateX(-20deg);
+    filter: blur(4px);
+  }
+  60% {
+    opacity: 1;
+    transform: translateY(-4px) scale(1.02) rotateX(0deg);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+    filter: blur(0px);
+  }
+}
+
+@keyframes shimmerGradient {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes floatPill {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+@keyframes kenBurnsSubtle {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.04);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.animate-kinetic-letter {
+  display: inline-block;
+  animation: kineticLetter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-shimmer-text {
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-size: 200% auto;
+  animation: shimmerGradient 4s ease infinite;
+}
+
+.animate-float-pill {
+  animation: floatPill 3.5s ease-in-out infinite;
+}
+
+.animate-ken-burns {
+  animation: kenBurnsSubtle 14s ease-in-out infinite alternate;
+}
