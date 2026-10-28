@@ -1,14 +1,8 @@
-import React from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { CompanySettings } from '../types';
 import {
-  ShieldCheck,
   Target,
   Eye,
-  Award,
-  Users,
-  Building,
-  CheckCircle2,
-  Clock,
   Sparkles,
   MapPin,
   HeartHandshake,
@@ -18,15 +12,169 @@ interface AboutUsSectionProps {
   companySettings?: CompanySettings;
 }
 
+interface StatItemConfig {
+  label: string;
+  target: number;
+  prefix: string;
+  suffix: string;
+  decimals: number;
+  useDotSeparator: boolean;
+  finalDisplay: string;
+  note: string;
+}
+
+const STATS_CONFIG: StatItemConfig[] = [
+  {
+    label: 'Empresas & Lojas Atendidas',
+    target: 1200,
+    prefix: '+',
+    suffix: '',
+    decimals: 0,
+    useDotSeparator: true,
+    finalDisplay: '+1.200',
+    note: 'Em Maputo, Matola e províncias',
+  },
+  {
+    label: 'Uptime & Resiliência Offline',
+    target: 99.8,
+    prefix: '',
+    suffix: '%',
+    decimals: 1,
+    useDotSeparator: false,
+    finalDisplay: '99.8%',
+    note: 'Faturação contínua sem internet',
+  },
+  {
+    label: 'Integração Carteiras Móveis',
+    target: 100,
+    prefix: '',
+    suffix: '%',
+    decimals: 0,
+    useDotSeparator: false,
+    finalDisplay: '100%',
+    note: 'M-Pesa e E-Mola automatizados',
+  },
+  {
+    label: 'Anos de Experiência Local',
+    target: 8,
+    prefix: '+',
+    suffix: ' Anos',
+    decimals: 0,
+    useDotSeparator: false,
+    finalDisplay: '+8 Anos',
+    note: 'Especialistas no mercado moçambicano',
+  },
+];
+
+export function formatStatCounterValue(currentValue: number, stat: StatItemConfig): string {
+  if (stat.decimals > 0) {
+    return `${stat.prefix}${currentValue.toFixed(stat.decimals)}${stat.suffix}`;
+  }
+  const rounded = Math.round(currentValue);
+  const formattedNumber = stat.useDotSeparator
+    ? rounded.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.')
+    : rounded.toString();
+  return `${stat.prefix}${formattedNumber}${stat.suffix}`;
+}
+
+const AnimatedStatCard: React.FC<{
+  stat: StatItemConfig;
+  triggerKey: number;
+}> = ({ stat, triggerKey }) => {
+  const [currentValue, setCurrentValue] = useState<number>(0);
+  const [isAnimating, setIsAnimating] = useState<boolean>(false);
+  const rafRef = useRef<number | null>(null);
+
+  const runCountUp = useCallback(() => {
+    if (rafRef.current) {
+      cancelAnimationFrame(rafRef.current);
+    }
+    setCurrentValue(0);
+    setIsAnimating(true);
+
+    const duration = 1600;
+    const startTime = performance.now();
+
+    const step = (now: number) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      // Ease-out cubic for smooth deceleration at the target number
+      const eased = 1 - Math.pow(1 - progress, 3);
+      const nextVal = stat.target * eased;
+
+      if (progress < 1) {
+        setCurrentValue(nextVal);
+        rafRef.current = requestAnimationFrame(step);
+      } else {
+        setCurrentValue(stat.target);
+        setIsAnimating(false);
+      }
+    };
+
+    rafRef.current = requestAnimationFrame(step);
+  }, [stat.target]);
+
+  useEffect(() => {
+    if (triggerKey > 0) {
+      runCountUp();
+    } else {
+      setCurrentValue(0);
+    }
+    return () => {
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
+  }, [triggerKey, runCountUp]);
+
+  return (
+    <div
+      onMouseEnter={runCountUp}
+      data-testid={`stat-card-${stat.label}`}
+      className="group p-5 sm:p-6 rounded-3xl bg-slate-50 border border-slate-200/80 shadow-xs hover:border-blue-400 hover:bg-blue-50/30 hover:-translate-y-1 hover:shadow-md transition-all duration-300 cursor-pointer select-none"
+    >
+      <span
+        data-testid="stat-animated-value"
+        className={`text-2xl sm:text-4xl font-black block tracking-tight tabular-nums transition-transform duration-200 ${
+          isAnimating ? 'text-blue-600 scale-[1.03]' : 'text-blue-900 group-hover:text-blue-700'
+        }`}
+      >
+        {formatStatCounterValue(currentValue, stat)}
+      </span>
+      <span className="font-bold text-gray-900 text-xs sm:text-sm mt-1 block">
+        {stat.label}
+      </span>
+      <span className="text-[11px] text-gray-500 mt-0.5 block">{stat.note}</span>
+    </div>
+  );
+};
+
 export const AboutUsSection: React.FC<AboutUsSectionProps> = ({ companySettings }) => {
   const companyName = companySettings?.name || 'TechVisions';
+  const statsContainerRef = useRef<HTMLDivElement | null>(null);
+  const [animationTrigger, setAnimationTrigger] = useState<number>(0);
 
-  const stats = [
-    { label: 'Empresas & Lojas Atendidas', value: '+1.200', note: 'Em Maputo, Matola e províncias' },
-    { label: 'Uptime & Resiliência Offline', value: '99.8%', note: 'Faturação contínua sem internet' },
-    { label: 'Integração Carteiras Móveis', value: '100%', note: 'M-Pesa e E-Mola automatizados' },
-    { label: 'Anos de Experiência Local', value: '+8 Anos', note: 'Especialistas no mercado moçambicano' },
-  ];
+  useEffect(() => {
+    const el = statsContainerRef.current;
+    if (!el) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            setAnimationTrigger((prev) => prev + 1);
+          } else {
+            // Reset to 0 when out of view so approaching again starts from 0
+            setAnimationTrigger(0);
+          }
+        });
+      },
+      { threshold: 0.15 }
+    );
+
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
 
   const values = [
     {
@@ -65,21 +213,14 @@ export const AboutUsSection: React.FC<AboutUsSectionProps> = ({ companySettings 
           </p>
         </div>
 
-        {/* Stats Grid */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-          {stats.map((s, i) => (
-            <div
-              key={i}
-              className="p-5 sm:p-6 rounded-3xl bg-slate-50 border border-slate-200/80 shadow-xs hover:border-blue-300 transition-colors"
-            >
-              <span className="text-2xl sm:text-4xl font-black text-blue-900 block tracking-tight">
-                {s.value}
-              </span>
-              <span className="font-bold text-gray-900 text-xs sm:text-sm mt-1 block">
-                {s.label}
-              </span>
-              <span className="text-[11px] text-gray-500 mt-0.5 block">{s.note}</span>
-            </div>
+        {/* Animated Stats Grid (Counts from 0 to target on scroll into view or hover) */}
+        <div
+          ref={statsContainerRef}
+          data-testid="about-stats-grid"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6"
+        >
+          {STATS_CONFIG.map((s, i) => (
+            <AnimatedStatCard key={i} stat={s} triggerKey={animationTrigger} />
           ))}
         </div>
 

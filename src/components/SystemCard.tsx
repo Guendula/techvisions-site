@@ -14,6 +14,7 @@ import {
   WifiOff,
   Cloud,
   GitCompare,
+  PlayCircle,
 } from 'lucide-react';
 
 interface SystemCardProps {
@@ -149,6 +150,17 @@ export const SystemCard: React.FC<SystemCardProps> = ({
             </span>
           )}
         </div>
+
+        {/* Quick Demo Video Badge */}
+        <button
+          type="button"
+          onClick={() => onOpenDemo(system)}
+          className="absolute bottom-3 right-3 flex items-center gap-1 bg-rose-600/90 hover:bg-rose-500 text-white text-[11px] font-bold px-2.5 py-1 rounded-full shadow-md backdrop-blur-sm transition"
+          title="Ver detalhes, vantagens e vídeos de demonstração"
+        >
+          <PlayCircle className="w-3.5 h-3.5" />
+          <span>Vídeos & Detalhes</span>
+        </button>
       </div>
 
       {/* Card Content */}
@@ -253,11 +265,14 @@ export const SystemCard: React.FC<SystemCardProps> = ({
         {/* Action Buttons */}
         <div className="mt-4 grid grid-cols-2 gap-2">
           <button
+            type="button"
+            data-testid="system-card-test-demo-btn"
             onClick={() => onOpenDemo(system)}
+            title="Ver detalhes do programa, o que faz, vantagens, categorias e vídeos de demonstração"
             className="w-full py-2.5 px-2 bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition active:scale-95"
           >
+            <PlayCircle className="w-3.5 h-3.5 text-rose-600 shrink-0" />
             <span>Testar Demo</span>
-            <ExternalLink className="w-3.5 h-3.5 text-slate-500" />
           </button>
 
           <button

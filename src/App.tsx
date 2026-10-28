@@ -64,7 +64,18 @@ const MainAppContent: React.FC = () => {
   // Systems State with localStorage
   const [systems, setSystems] = useState<SystemProduct[]>(() => {
     const saved = localStorage.getItem('tv_catalog_systems');
-    return saved ? JSON.parse(saved) : INITIAL_SYSTEMS;
+    const raw: SystemProduct[] = saved ? JSON.parse(saved) : INITIAL_SYSTEMS;
+    return raw.map((sys) => {
+      const initialMatch = INITIAL_SYSTEMS.find((init) => init.id === sys.id);
+      return {
+        ...sys,
+        videoUrl: sys.videoUrl ?? initialMatch?.videoUrl,
+        faqs: sys.faqs && sys.faqs.length > 0 ? sys.faqs : initialMatch?.faqs,
+        imageUrl: sys.imageUrl?.includes('photo-1556742049-0a67c5574f73')
+          ? 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80'
+          : sys.imageUrl,
+      };
+    });
   });
 
   // Comments / Testimonials State with localStorage
@@ -109,11 +120,24 @@ const MainAppContent: React.FC = () => {
   const [heroSlides, setHeroSlides] = useState<HeroSlide[]>(() => {
     const saved = localStorage.getItem('tv_hero_slides');
     const raw: HeroSlide[] = saved ? JSON.parse(saved) : INITIAL_HERO_SLIDES;
-    return raw.map((s) => ({
-      ...s,
-      secondaryCtaLink: s.secondaryCtaLink === '#testemunhos-section' ? '#contacto-section' : s.secondaryCtaLink,
-      secondaryCtaText: s.secondaryCtaText === 'Ver Histórias de Sucesso' ? 'Falar com Especialistas' : s.secondaryCtaText,
-    }));
+    return raw.map((s, idx) => {
+      const def = INITIAL_HERO_SLIDES[idx % INITIAL_HERO_SLIDES.length];
+      const cleanImg =
+        !s.imageUrl || s.imageUrl.includes('photo-1556742049-0a67c5574f73')
+          ? def?.imageUrl || 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1600&q=85'
+          : s.imageUrl;
+      return {
+        ...s,
+        imageUrl: cleanImg,
+        textAnimation: s.textAnimation || def?.textAnimation || 'kinetic',
+        titleColor: s.titleColor || def?.titleColor || '#FFFFFF',
+        highlightColor: s.highlightColor !== undefined ? s.highlightColor : def?.highlightColor || '#38BDF8',
+        subtitleColor: s.subtitleColor || def?.subtitleColor || '#F1F5F9',
+        badgeColor: s.badgeColor || def?.badgeColor || '#6EE7B7',
+        secondaryCtaLink: s.secondaryCtaLink === '#testemunhos-section' ? '#contacto-section' : s.secondaryCtaLink,
+        secondaryCtaText: s.secondaryCtaText === 'Ver Histórias de Sucesso' ? 'Falar com Especialistas' : s.secondaryCtaText,
+      };
+    });
   });
 
   // Company Identity Settings State with localStorage

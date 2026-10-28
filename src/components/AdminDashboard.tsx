@@ -9,12 +9,14 @@ import {
   NavigationMenuItem,
   NavigationSubItem,
   HeroSlide,
+  SlideTextAnimation,
   CompanySettings,
   SystemApiConfig,
   CategoryItem,
   SeoSettings,
   CompanyServiceItem,
 } from '../types';
+import { getSlideLetterAnimClass, renderAnimatedWords } from './Hero';
 import { AdminSettingsSection } from './AdminSettingsSection';
 import { AdminCategoriesSection } from './AdminCategoriesSection';
 import { AdminSeoSection } from './AdminSeoSection';
@@ -375,6 +377,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     'Gaveta de Dinheiro RJ11',
   ]);
   const [badgeText, setBadgeText] = useState('Recente');
+  const [whatItDoesText, setWhatItDoesText] = useState('');
+  const [advantagesText, setAdvantagesText] = useState('');
+  const [offeredCategoriesText, setOfferedCategoriesText] = useState('');
+  const [faqsText, setFaqsText] = useState('');
+  const [demoVideoTitle, setDemoVideoTitle] = useState('');
+  const [demoVideoUrl, setDemoVideoUrl] = useState('');
 
   const imagePresets = [
     { label: 'Padaria / Pastelaria', url: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80', cat: 'Padaria' as ProductCategory, type: 'bakery' as const },
@@ -384,7 +392,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     { label: 'Loja de Roupas / Moda', url: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80', cat: 'Loja de Roupas' as ProductCategory, type: 'pos' as const },
     { label: 'Supermercado Multi-Caixa', url: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80', cat: 'Supermercado' as ProductCategory, type: 'pos' as const },
     { label: 'Stock & Armazém', url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80', cat: 'Gestão de Stock & Armazém' as ProductCategory, type: 'inventory' as const },
-    { label: 'Comércio Eletrónico', url: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=800&q=80', cat: 'Comércio Eletrónico' as ProductCategory, type: 'ecommerce' as const },
+    { label: 'Comércio Eletrónico', url: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80', cat: 'Comércio Eletrónico' as ProductCategory, type: 'ecommerce' as const },
     { label: 'Sistemas Financeiros', url: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?auto=format&fit=crop&w=800&q=80', cat: 'Sistemas Financeiros' as ProductCategory, type: 'pos' as const },
   ];
 
@@ -412,6 +420,12 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setImageUrl(sys.imageUrl || '');
     setDescription(sys.description || '');
     setFeatures(sys.features.join('\n'));
+    setWhatItDoesText((sys.whatItDoes || []).join('\n'));
+    setAdvantagesText((sys.advantages || []).map((a) => `${a.title} | ${a.description}`).join('\n'));
+    setOfferedCategoriesText((sys.offeredCategories || []).map((c) => `${c.name} | ${c.description}`).join('\n'));
+    setFaqsText((sys.faqs || []).map((f) => `${f.question} | ${f.answer}`).join('\n'));
+    setDemoVideoTitle(sys.demoVideos?.[0]?.title || '');
+    setDemoVideoUrl(sys.videoUrl || sys.demoVideos?.[0]?.videoUrl || '');
     setDemoType(sys.demoType || 'pos');
     setOfflineSupported(sys.specs?.offlineMode ?? true);
     setMobileSupported(sys.isMobileSupported ?? true);
@@ -423,9 +437,52 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const handleSaveSystem = (e: React.FormEvent) => {
     e.preventDefault();
     if (!title.trim() || !price || !description.trim()) {
-      alert('Por favor preencha os campos obrigatórios (Título, Preço e Descrição).');
       return;
     }
+
+    const parsedWhatItDoes = whatItDoesText
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean);
+
+    const parsedAdvantages = advantagesText
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [t, d] = line.split('|').map((p) => p.trim());
+        return {
+          title: t || line,
+          description: d || 'Vantagem operacional incluída na licença.',
+          metric: 'Alta Performance',
+        };
+      });
+
+    const parsedOfferedCategories = offeredCategoriesText
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [n, d] = line.split('|').map((p) => p.trim());
+        return {
+          name: n || line,
+          description: d || 'Módulo completo integrado no sistema.',
+          badge: 'Incluído',
+        };
+      });
+
+    const parsedFaqs = faqsText
+      .split('\n')
+      .map((s) => s.trim())
+      .filter(Boolean)
+      .map((line) => {
+        const [q, a] = line.split('|').map((p) => p.trim());
+        return {
+          question: q || line,
+          answer: a || 'Suporte completo incluído na licença TechVisions.',
+          category: category,
+        };
+      });
 
     const payload: SystemProduct = {
       id: editingSystemId || `tv-sys-${Date.now()}`,
@@ -434,6 +491,25 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       price: parseFloat(price) || 0,
       description: description.trim(),
       fullDescription: description.trim(),
+      videoUrl: demoVideoUrl.trim() || undefined,
+      whatItDoes: parsedWhatItDoes.length > 0 ? parsedWhatItDoes : undefined,
+      advantages: parsedAdvantages.length > 0 ? parsedAdvantages : undefined,
+      offeredCategories: parsedOfferedCategories.length > 0 ? parsedOfferedCategories : undefined,
+      faqs: parsedFaqs.length > 0 ? parsedFaqs : undefined,
+      demoVideos:
+        demoVideoTitle.trim() || demoVideoUrl.trim()
+          ? [
+              {
+                id: `vid-${Date.now()}`,
+                title: demoVideoTitle.trim() || `Demonstração ${title.trim()}`,
+                duration: '02:45',
+                category: category,
+                description: description.trim(),
+                videoUrl: demoVideoUrl.trim() || undefined,
+                thumbnailUrl: imageUrl.trim() || undefined,
+              },
+            ]
+          : undefined,
       demoUrl: demoUrl.trim() || 'https://demo.techvisions.co.mz',
       imageUrl: imageUrl.trim() || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=800&q=80',
       likesCount: editingSystemId ? (systems.find((s) => s.id === editingSystemId)?.likesCount || 1) : 1,
@@ -789,6 +865,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
   const [slideSecondaryCtaLink, setSlideSecondaryCtaLink] = useState('#parceiros-section');
   const [slideImageUrl, setSlideImageUrl] = useState('https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=1200&q=80');
   const [slideGradientPreset, setSlideGradientPreset] = useState<'blue' | 'purple' | 'emerald' | 'sunset'>('blue');
+  const [slideTextAnimation, setSlideTextAnimation] = useState<SlideTextAnimation>('kinetic');
+  const [slideTitleColor, setSlideTitleColor] = useState<string>('#FFFFFF');
+  const [slideHighlightColor, setSlideHighlightColor] = useState<string>('#38BDF8');
+  const [slideSubtitleColor, setSlideSubtitleColor] = useState<string>('#F1F5F9');
+  const [slideBadgeColor, setSlideBadgeColor] = useState<string>('#6EE7B7');
   const [slideIsActive, setSlideIsActive] = useState(true);
   const [slideOrder, setSlideOrder] = useState(1);
   const [slidePill1, setSlidePill1] = useState('M-Pesa & E-Mola Integrados');
@@ -797,6 +878,29 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
   // Preview test key to re-trigger kinetic letters in preview modal
   const [previewAnimKey, setPreviewAnimKey] = useState(0);
+
+  const SLIDE_ANIMATION_OPTIONS: Array<{
+    id: SlideTextAnimation;
+    label: string;
+    desc: string;
+  }> = [
+    { id: 'kinetic', label: 'Cascata Cinética 3D', desc: 'Letras entram com rotação suave' },
+    { id: 'typewriter', label: 'Máquina de Escrever', desc: 'Digitação letra a letra' },
+    { id: 'wave', label: 'Onda Flutuante', desc: 'Movimento ondulado suave' },
+    { id: 'zoom-pop', label: 'Explosão Zoom (Pop)', desc: 'Salto elástico dinâmico' },
+    { id: 'slide-left', label: 'Deslize Lateral', desc: 'Entrada rápida da esquerda' },
+    { id: 'glow-pulse', label: 'Brilho Neon Pulsante', desc: 'Efeito luminoso intenso' },
+  ];
+
+  const LETTER_COLOR_SWATCHES = [
+    { label: 'Branco', hex: '#FFFFFF' },
+    { label: 'Dourado', hex: '#FACC15' },
+    { label: 'Esmeralda', hex: '#34D399' },
+    { label: 'Azul Celeste', hex: '#38BDF8' },
+    { label: 'Rosa Coral', hex: '#FB7185' },
+    { label: 'Lilás Neon', hex: '#C084FC' },
+    { label: 'Laranja Vivo', hex: '#FB923C' },
+  ];
 
   const handleOpenAddSlideModal = () => {
     setEditingSlideId(null);
@@ -810,6 +914,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setSlideSecondaryCtaLink('#maps-advisor');
     setSlideImageUrl('https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=1200&q=80');
     setSlideGradientPreset('blue');
+    setSlideTextAnimation('kinetic');
+    setSlideTitleColor('#FFFFFF');
+    setSlideHighlightColor('#38BDF8');
+    setSlideSubtitleColor('#F1F5F9');
+    setSlideBadgeColor('#6EE7B7');
     setSlideIsActive(true);
     setSlideOrder(slides.length + 1);
     setSlidePill1('M-Pesa & E-Mola Integrados');
@@ -830,6 +939,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setSlideSecondaryCtaText(sl.secondaryCtaText);
     setSlideSecondaryCtaLink(sl.secondaryCtaLink);
     setSlideImageUrl(sl.imageUrl || '');
+    setSlideTextAnimation(sl.textAnimation || 'kinetic');
+    setSlideTitleColor(sl.titleColor || '#FFFFFF');
+    setSlideHighlightColor(sl.highlightColor || '#38BDF8');
+    setSlideSubtitleColor(sl.subtitleColor || '#F1F5F9');
+    setSlideBadgeColor(sl.badgeColor || '#6EE7B7');
     setSlideIsActive(sl.isActive);
     setSlideOrder(sl.order);
     setSlidePill1(sl.statsPills?.[0]?.text || '');
@@ -839,10 +953,50 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
     setIsSlideModalOpen(true);
   };
 
+  const [slideSavedFeedback, setSlideSavedFeedback] = useState<string>('');
+
+  const SLIDE_IMAGE_PRESETS = [
+    {
+      label: 'Comércio & POS',
+      url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80',
+    },
+    {
+      label: 'Padaria & Café',
+      url: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=1200&q=80',
+    },
+    {
+      label: 'Pagamentos & Finanças',
+      url: 'https://images.unsplash.com/photo-1559526324-4b87b5e36e44?auto=format&fit=crop&w=1200&q=80',
+    },
+    {
+      label: 'Armazém & Stock',
+      url: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=1200&q=80',
+    },
+    {
+      label: 'Servidores & Redes TI',
+      url: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=1200&q=80',
+    },
+    {
+      label: 'Escritório & Equipa',
+      url: 'https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1200&q=80',
+    },
+  ];
+
+  const handleSlideImageFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setSlideImageUrl(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSaveSlide = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!slideTitle.trim() || !slideHighlightWord.trim()) {
-      alert('Preencha o título e a palavra destacada animada do slide.');
+    if (!slideTitle.trim()) {
       return;
     }
 
@@ -870,7 +1024,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
     const payload: HeroSlide = {
       id: editingSlideId || `slide-${Date.now()}`,
-      badge: slideBadge.trim() || 'TechVisions Moçambique',
+      badge: slideBadge.trim(),
       title: slideTitle.trim(),
       highlightWord: slideHighlightWord.trim(),
       subtitle: slideSubtitle.trim(),
@@ -878,11 +1032,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
       primaryCtaLink: slidePrimaryCtaLink.trim() || '#catalog-section',
       secondaryCtaText: slideSecondaryCtaText.trim() || 'Parceiros',
       secondaryCtaLink: slideSecondaryCtaLink.trim() || '#parceiros-section',
-      imageUrl: slideImageUrl.trim(),
+      imageUrl:
+        slideImageUrl.trim() ||
+        'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=1200&q=80',
       gradientFrom,
       gradientVia,
       gradientTo,
       accentColor,
+      textAnimation: slideTextAnimation,
+      titleColor: slideTitleColor,
+      highlightColor: slideHighlightColor,
+      subtitleColor: slideSubtitleColor,
+      badgeColor: slideBadgeColor,
       statsPills: pills,
       isActive: slideIsActive,
       order: slideOrder,
@@ -890,12 +1051,13 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
     if (editingSlideId && onUpdateSlide) {
       onUpdateSlide(payload);
-      alert(`Slide atualizado com sucesso!`);
+      setSlideSavedFeedback(`Slide "${payload.title}" (imagem, letras, animação e cores) atualizado com sucesso!`);
     } else if (onAddSlide) {
       onAddSlide(payload);
-      alert(`Novo slide animado adicionado ao banner principal!`);
+      setSlideSavedFeedback(`Novo slide "${payload.title}" adicionado ao banner principal!`);
     }
 
+    setTimeout(() => setSlideSavedFeedback(''), 4000);
     setIsSlideModalOpen(false);
   };
 
@@ -1535,12 +1697,99 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   Funcionalidades Principais (Uma por linha)
                 </label>
                 <textarea
-                  rows={4}
+                  rows={3}
                   placeholder="Modo 100% Offline com sincronização&#10;Emissão rápida de faturas e talões&#10;Integração direta com M-Pesa e E-Mola"
                   value={features}
                   onChange={(e) => setFeatures(e.target.value)}
                   className="w-full px-3 py-2.5 rounded-xl border border-gray-200 focus:outline-none focus:ring-2 focus:ring-blue-500 text-xs leading-relaxed font-mono"
                 />
+              </div>
+
+              {/* Detalhes do Botão "Testar Demo" (O Que Faz, Vantagens, Categorias & Vídeos) */}
+              <div className="p-4 bg-blue-50/50 rounded-2xl border border-blue-200 space-y-3">
+                <span className="font-bold text-blue-950 block text-xs">
+                  Conteúdo da Janela &quot;Testar Demo&quot; (O Que Faz, Vantagens, Categorias &amp; Vídeo Demo)
+                </span>
+
+                <div>
+                  <label className="font-bold text-gray-700 block mb-1">
+                    O Que Este Programa Faz (Opcional — uma explicação por linha)
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Se deixar em branco, o sistema gera automaticamente explicações detalhadas para a categoria."
+                    value={whatItDoesText}
+                    onChange={(e) => setWhatItDoesText(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs"
+                  />
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-bold text-gray-700 block mb-1">
+                      Vantagens (Título | Descrição por linha)
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Ex: Mais Rapidez | Atendimento 3x mais rápido no balcão"
+                      value={advantagesText}
+                      onChange={(e) => setAdvantagesText(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-gray-700 block mb-1">
+                      Categorias / Módulos que Oferece (Nome | Descrição)
+                    </label>
+                    <textarea
+                      rows={2}
+                      placeholder="Ex: Balcão POS | Vendas rápidas e impressão térmica"
+                      value={offeredCategoriesText}
+                      onChange={(e) => setOfferedCategoriesText(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-bold text-gray-700 block mb-1">
+                      Título do Vídeo de Demonstração (Opcional)
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Ex: Tour Completo do Sistema no Balcão"
+                      value={demoVideoTitle}
+                      onChange={(e) => setDemoVideoTitle(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs"
+                    />
+                  </div>
+                  <div>
+                    <label className="font-bold text-gray-700 block mb-1">
+                      URL do Vídeo de Demonstração (YouTube ou MP4 Nativo)
+                    </label>
+                    <input
+                      type="url"
+                      placeholder="https://www.youtube.com/watch?v=... ou https://exemplo.co.mz/demo.mp4"
+                      value={demoVideoUrl}
+                      onChange={(e) => setDemoVideoUrl(e.target.value)}
+                      className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="font-bold text-gray-700 block mb-1">
+                    Perguntas Frequentes / FAQ do Sistema (Pergunta | Resposta por linha)
+                  </label>
+                  <textarea
+                    rows={2}
+                    placeholder="Ex: O sistema funciona sem internet? | Sim, opera 100% offline e sincroniza automaticamente."
+                    value={faqsText}
+                    onChange={(e) => setFaqsText(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-gray-200 bg-white text-xs"
+                  />
+                </div>
               </div>
 
               {/* Hardware & Offline Toggles */}
@@ -2108,24 +2357,43 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
           </div>
 
+          {slideSavedFeedback && (
+            <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-bold flex items-center gap-2">
+              <CheckCircle className="w-4 h-4 text-emerald-600 shrink-0" />
+              <span>{slideSavedFeedback}</span>
+            </div>
+          )}
+
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-xs">
             {slides
               .sort((a, b) => a.order - b.order)
               .map((sl) => (
                 <div
                   key={sl.id}
-                  className="p-5 rounded-2xl border border-gray-200 bg-slate-900 text-white shadow-md flex flex-col justify-between overflow-hidden relative group"
+                  className="rounded-2xl border border-gray-200 bg-slate-900 text-white shadow-md flex flex-col justify-between overflow-hidden relative group"
                 >
-                  {/* Background preview */}
-                  <div className="space-y-3 relative z-10">
-                    <div className="flex items-center justify-between">
-                      <span className="px-2.5 py-0.5 rounded-full bg-blue-500/30 text-blue-300 text-[10px] font-bold border border-blue-400/30">
+                  {/* Slide Image Preview Header */}
+                  <div className="relative h-40 w-full bg-slate-800 overflow-hidden border-b border-slate-800">
+                    {sl.imageUrl ? (
+                      <img
+                        src={sl.imageUrl}
+                        alt={sl.highlightWord}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-slate-500 text-xs">
+                        Sem imagem definida
+                      </div>
+                    )}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/20 to-transparent" />
+                    <div className="absolute top-3 left-3 right-3 flex items-center justify-between">
+                      <span className="px-2.5 py-0.5 rounded-full bg-slate-950/80 backdrop-blur-md text-blue-300 text-[10px] font-bold border border-blue-400/30">
                         Slide {sl.order} • {sl.isActive ? 'Ativo' : 'Oculto'}
                       </span>
                       {onUpdateSlide && (
                         <button
                           onClick={() => onUpdateSlide({ ...sl, isActive: !sl.isActive })}
-                          className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                          className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow-xs ${
                             sl.isActive ? 'bg-emerald-500 text-white' : 'bg-gray-700 text-gray-300'
                           }`}
                         >
@@ -2133,55 +2401,84 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                         </button>
                       )}
                     </div>
-
-                    <p className="text-[11px] text-blue-200 font-medium">{sl.badge}</p>
-
-                    <div>
-                      <h4 className="font-bold text-white text-sm">{sl.title}</h4>
-                      <span className="font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-300 text-sm block">
-                        {sl.highlightWord}
-                      </span>
-                    </div>
-
-                    <p className="text-blue-100/70 text-[11px] line-clamp-2 leading-relaxed">
-                      {sl.subtitle}
-                    </p>
-
-                    <div className="flex items-center gap-2 pt-2">
-                      <span className="px-2.5 py-1 rounded-lg bg-blue-600 text-white font-bold text-[10px]">
-                        {sl.primaryCtaText}
-                      </span>
-                      <span className="px-2.5 py-1 rounded-lg bg-white/10 text-white font-bold text-[10px]">
-                        {sl.secondaryCtaText}
+                    <div className="absolute bottom-2.5 left-3 right-3">
+                      <span className="text-[10px] text-emerald-300 font-bold uppercase tracking-wider block truncate">
+                        {sl.badge}
                       </span>
                     </div>
                   </div>
 
-                  <div className="pt-4 mt-4 border-t border-white/10 flex items-center justify-between relative z-10">
-                    <span className="text-[10px] text-white/50">{sl.statsPills?.length || 0} Badges</span>
-
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        onClick={() => handleEditSlideClick(sl)}
-                        className="px-3 py-1.5 rounded-lg bg-white/20 hover:bg-white/30 text-white font-bold transition flex items-center gap-1 text-[11px]"
-                      >
-                        <Edit className="w-3.5 h-3.5" />
-                        <span>Editar</span>
-                      </button>
-
-                      {onDeleteSlide && (
-                        <button
-                          onClick={() => {
-                            if (confirm('Eliminar este slide do banner principal?')) {
-                              onDeleteSlide(sl.id);
-                            }
-                          }}
-                          className="p-1.5 text-white/50 hover:text-rose-400 hover:bg-white/10 rounded-lg transition"
-                          title="Eliminar slide"
+                  {/* Slide Text / Letters Preview */}
+                  <div className="p-5 space-y-3 relative z-10 flex-1 flex flex-col justify-between">
+                    <div className="space-y-2">
+                      <div>
+                        <h4
+                          className="font-bold text-sm"
+                          style={{ color: sl.titleColor || '#FFFFFF' }}
                         >
-                          <Trash2 className="w-4 h-4" />
+                          {sl.title}
+                        </h4>
+                        {sl.highlightWord && (
+                          <span
+                            className="font-black text-sm block"
+                            style={{ color: sl.highlightColor || '#38BDF8' }}
+                          >
+                            {sl.highlightWord}
+                          </span>
+                        )}
+                      </div>
+
+                      <p
+                        className="text-[11px] line-clamp-2 leading-relaxed"
+                        style={{ color: sl.subtitleColor || '#CBD5E1' }}
+                      >
+                        {sl.subtitle}
+                      </p>
+
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                        <span className="px-2 py-0.5 rounded-md bg-purple-500/20 border border-purple-400/30 text-purple-200 font-bold text-[10px]">
+                          Animação: {SLIDE_ANIMATION_OPTIONS.find((a) => a.id === (sl.textAnimation || 'kinetic'))?.label || 'Cascata 3D'}
+                        </span>
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-white/10 text-white text-[10px]">
+                          <span
+                            className="w-2.5 h-2.5 rounded-full border border-white/40"
+                            style={{ backgroundColor: sl.titleColor || '#FFFFFF' }}
+                          />
+                          <span
+                            className="w-2.5 h-2.5 rounded-full border border-white/40"
+                            style={{ backgroundColor: sl.highlightColor || '#38BDF8' }}
+                          />
+                          <span>Cores</span>
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-4 mt-3 border-t border-white/10 flex items-center justify-between relative z-10">
+                      <span className="text-[10px] text-white/50">{sl.statsPills?.length || 0} Emblemas</span>
+
+                      <div className="flex items-center gap-1.5">
+                        <button
+                          onClick={() => handleEditSlideClick(sl)}
+                          className="px-3 py-1.5 rounded-lg bg-rose-600 hover:bg-rose-500 text-white font-bold transition flex items-center gap-1 text-[11px]"
+                        >
+                          <Edit className="w-3.5 h-3.5" />
+                          <span>Editar Imagem &amp; Letras</span>
                         </button>
-                      )}
+
+                        {onDeleteSlide && (
+                          <button
+                            onClick={() => {
+                              if (confirm('Eliminar este slide do banner principal?')) {
+                                onDeleteSlide(sl.id);
+                              }
+                            }}
+                            className="p-1.5 text-white/50 hover:text-rose-400 hover:bg-white/10 rounded-lg transition"
+                            title="Eliminar slide"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -2731,8 +3028,8 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
       {/* SLIDE HERO & KINETIC TYPOGRAPHY MODAL */}
       {isSlideModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4 overflow-y-auto">
-          <div className="bg-slate-950 text-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl border border-slate-800 space-y-5 text-xs my-8 animate-in fade-in zoom-in-95">
+        <div className="fixed inset-0 z-50 bg-slate-900/80 backdrop-blur-md flex items-center justify-center p-4">
+          <div className="bg-slate-950 text-white rounded-3xl max-w-2xl w-full max-h-[90vh] overflow-y-auto p-6 sm:p-8 shadow-2xl border border-slate-800 space-y-5 text-xs animate-in fade-in zoom-in-95">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800">
               <h3 className="font-black text-white text-base flex items-center gap-2">
                 <Sliders className="w-5 h-5 text-rose-500" />
@@ -2744,52 +3041,313 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
             </div>
 
             <form onSubmit={handleSaveSlide} className="space-y-4">
-              <div>
-                <label className="font-bold text-blue-300 block mb-1">Texto da Insígnia Superior (Badge)</label>
+              {/* IMAGE CONFIGURATION BLOCK FOR THIS SLIDE */}
+              <div className="p-4 rounded-2xl bg-slate-900 border border-emerald-500/30 space-y-3">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <div>
+                    <label className="font-black text-emerald-400 block text-xs uppercase tracking-wider">
+                      1. Imagem do Slide (Troca Junto com o Slider) *
+                    </label>
+                    <p className="text-[11px] text-slate-400">
+                      Cole o link de uma imagem, carregue uma foto do seu computador/telemóvel ou escolha da galeria rápida.
+                    </p>
+                  </div>
+
+                  <label className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-[11px] cursor-pointer transition inline-flex items-center gap-1.5 shrink-0 self-start sm:self-auto">
+                    <span>Carregar Foto do Dispositivo</span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleSlideImageFileUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+
                 <input
                   type="text"
-                  value={slideBadge}
-                  onChange={(e) => setSlideBadge(e.target.value)}
-                  placeholder="Ex: Soluções Certificadas para Moçambique • M-Pesa & E-Mola"
-                  className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white focus:ring-2 focus:ring-rose-500"
+                  required
+                  value={slideImageUrl}
+                  onChange={(e) => setSlideImageUrl(e.target.value)}
+                  placeholder="https://images.unsplash.com/..."
+                  className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white font-mono text-[11px] focus:ring-2 focus:ring-emerald-500"
                 />
+
+                {/* Quick Preset Images */}
+                <div className="space-y-1.5">
+                  <span className="text-[10px] font-bold text-slate-400 block">
+                    Galeria Rápida de Imagens (Clique para aplicar ao slide):
+                  </span>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-2">
+                    {SLIDE_IMAGE_PRESETS.map((preset, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => setSlideImageUrl(preset.url)}
+                        className={`group relative rounded-xl overflow-hidden border-2 h-14 transition ${
+                          slideImageUrl === preset.url
+                            ? 'border-emerald-400 ring-2 ring-emerald-500/30'
+                            : 'border-slate-700 opacity-75 hover:opacity-100'
+                        }`}
+                      >
+                        <img
+                          src={preset.url}
+                          alt={preset.label}
+                          className="w-full h-full object-cover"
+                        />
+                        <span className="absolute inset-x-0 bottom-0 bg-slate-950/85 text-[9px] font-bold text-white py-0.5 truncate px-1">
+                          {preset.label}
+                        </span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              {/* LETTERS / TEXT CONFIGURATION BLOCK FOR THIS SLIDE */}
+              <div className="p-4 rounded-2xl bg-slate-900 border border-blue-500/30 space-y-3.5">
+                <label className="font-black text-blue-400 block text-xs uppercase tracking-wider">
+                  2. Textos e Letras Personalizadas Desta Imagem *
+                </label>
+
                 <div>
-                  <label className="font-bold text-blue-300 block mb-1">Título Inicial (Letras Animadas) *</label>
+                  <label className="font-bold text-blue-300 block mb-1">Texto da Insígnia Superior (Opcional)</label>
                   <input
                     type="text"
-                    required
-                    value={slideTitle}
-                    onChange={(e) => setSlideTitle(e.target.value)}
-                    placeholder="Ex: Sistemas Web & Mobile para o seu"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white"
+                    value={slideBadge}
+                    onChange={(e) => setSlideBadge(e.target.value)}
+                    placeholder="Ex: Soluções Certificadas para Moçambique • M-Pesa & E-Mola"
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white focus:ring-2 focus:ring-rose-500"
                   />
                 </div>
 
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label className="font-bold text-blue-300 block mb-1">Texto / Título Principal do Slide *</label>
+                    <input
+                      type="text"
+                      required
+                      value={slideTitle}
+                      onChange={(e) => setSlideTitle(e.target.value)}
+                      placeholder="Escreva qualquer título ou frase principal..."
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="font-bold text-amber-300 block mb-1">Texto / Frase em Destaque (Opcional)</label>
+                    <input
+                      type="text"
+                      value={slideHighlightWord}
+                      onChange={(e) => setSlideHighlightWord(e.target.value)}
+                      placeholder="Ex: Comércio em Moçambique"
+                      className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white font-bold"
+                    />
+                  </div>
+                </div>
+
                 <div>
-                  <label className="font-bold text-amber-300 block mb-1">Palavra / Frase Destacada (Gradiente Cintilante) *</label>
-                  <input
-                    type="text"
-                    required
-                    value={slideHighlightWord}
-                    onChange={(e) => setSlideHighlightWord(e.target.value)}
-                    placeholder="Ex: Comércio em Moçambique"
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white font-bold"
+                  <label className="font-bold text-blue-300 block mb-1">Subtítulo / Texto Livre Adicional</label>
+                  <textarea
+                    rows={2}
+                    value={slideSubtitle}
+                    onChange={(e) => setSlideSubtitle(e.target.value)}
+                    placeholder="Escreva qualquer mensagem ou descrição para acompanhar esta imagem..."
+                    className="w-full px-3 py-2 rounded-xl bg-slate-950 border border-slate-700 text-white"
                   />
                 </div>
               </div>
 
-              <div>
-                <label className="font-bold text-blue-300 block mb-1">Subtítulo / Descrição</label>
-                <textarea
-                  rows={2}
-                  value={slideSubtitle}
-                  onChange={(e) => setSlideSubtitle(e.target.value)}
-                  placeholder="Descreva as soluções comerciais de forma persuasiva para lojistas..."
-                  className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white"
-                />
+              {/* 3. LETTER ANIMATION SELECTOR */}
+              <div className="p-4 rounded-2xl bg-slate-900 border border-purple-500/30 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="font-black text-purple-400 block text-xs uppercase tracking-wider">
+                    3. Escolha a Animação das Letras Deste Slide
+                  </label>
+                  <span className="text-[10px] text-purple-300">
+                    Clique para testar a animação
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  {SLIDE_ANIMATION_OPTIONS.map((anim) => {
+                    const isSelected = slideTextAnimation === anim.id;
+                    return (
+                      <button
+                        key={anim.id}
+                        type="button"
+                        data-testid={`slide-anim-option-${anim.id}`}
+                        onClick={() => {
+                          setSlideTextAnimation(anim.id);
+                          setPreviewAnimKey((k) => k + 1);
+                        }}
+                        className={`p-2.5 rounded-xl border text-left transition ${
+                          isSelected
+                            ? 'bg-purple-600/25 border-purple-400 text-white shadow-md shadow-purple-950/50'
+                            : 'bg-slate-950 border-slate-800 text-slate-300 hover:border-slate-600'
+                        }`}
+                      >
+                        <div className="font-bold text-[11px] flex items-center justify-between">
+                          <span>{anim.label}</span>
+                          {isSelected && <span className="w-2 h-2 rounded-full bg-purple-400" />}
+                        </div>
+                        <p className="text-[10px] text-slate-400 mt-0.5 line-clamp-1">{anim.desc}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 4. LETTER COLORS SELECTOR */}
+              <div className="p-4 rounded-2xl bg-slate-900 border border-amber-500/30 space-y-3.5">
+                <label className="font-black text-amber-400 block text-xs uppercase tracking-wider">
+                  4. Escolha as Cores das Letras Deste Slide
+                </label>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {/* Title Letter Color */}
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-200 text-[11px]">Cor do Título Principal</span>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="color"
+                          data-testid="slide-title-color-picker"
+                          value={slideTitleColor}
+                          onChange={(e) => setSlideTitleColor(e.target.value)}
+                          className="w-6 h-6 rounded cursor-pointer border border-white/20 bg-transparent"
+                        />
+                        <span className="font-mono text-[10px] text-slate-400">{slideTitleColor}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {LETTER_COLOR_SWATCHES.map((sw) => (
+                        <button
+                          key={`tc-${sw.hex}`}
+                          type="button"
+                          onClick={() => setSlideTitleColor(sw.hex)}
+                          title={sw.label}
+                          className={`w-5 h-5 rounded-full border transition ${
+                            slideTitleColor.toUpperCase() === sw.hex
+                              ? 'border-white scale-115 ring-2 ring-amber-400'
+                              : 'border-white/30 opacity-80 hover:opacity-100'
+                          }`}
+                          style={{ backgroundColor: sw.hex }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Highlight Letter Color */}
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-200 text-[11px]">Cor da Frase em Destaque</span>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="color"
+                          data-testid="slide-highlight-color-picker"
+                          value={slideHighlightColor || '#38BDF8'}
+                          onChange={(e) => setSlideHighlightColor(e.target.value)}
+                          className="w-6 h-6 rounded cursor-pointer border border-white/20 bg-transparent"
+                        />
+                        <span className="font-mono text-[10px] text-slate-400">
+                          {slideHighlightColor || 'Gradiente'}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap items-center gap-1.5">
+                      {LETTER_COLOR_SWATCHES.map((sw) => (
+                        <button
+                          key={`hc-${sw.hex}`}
+                          type="button"
+                          onClick={() => setSlideHighlightColor(sw.hex)}
+                          title={sw.label}
+                          className={`w-5 h-5 rounded-full border transition ${
+                            slideHighlightColor.toUpperCase() === sw.hex
+                              ? 'border-white scale-115 ring-2 ring-amber-400'
+                              : 'border-white/30 opacity-80 hover:opacity-100'
+                          }`}
+                          style={{ backgroundColor: sw.hex }}
+                        />
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setSlideHighlightColor('')}
+                        className={`px-2 py-0.5 rounded text-[9px] font-bold border ${
+                          !slideHighlightColor
+                            ? 'bg-gradient-to-r from-blue-500 to-emerald-500 text-white border-white'
+                            : 'bg-slate-900 text-slate-400 border-slate-700'
+                        }`}
+                      >
+                        Multicor
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Subtitle Letter Color */}
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-200 text-[11px]">Cor do Subtítulo</span>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="color"
+                          value={slideSubtitleColor}
+                          onChange={(e) => setSlideSubtitleColor(e.target.value)}
+                          className="w-6 h-6 rounded cursor-pointer border border-white/20 bg-transparent"
+                        />
+                        <span className="font-mono text-[10px] text-slate-400">{slideSubtitleColor}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {LETTER_COLOR_SWATCHES.map((sw) => (
+                        <button
+                          key={`sc-${sw.hex}`}
+                          type="button"
+                          onClick={() => setSlideSubtitleColor(sw.hex)}
+                          title={sw.label}
+                          className={`w-5 h-5 rounded-full border transition ${
+                            slideSubtitleColor.toUpperCase() === sw.hex
+                              ? 'border-white scale-115 ring-2 ring-amber-400'
+                              : 'border-white/30 opacity-80 hover:opacity-100'
+                          }`}
+                          style={{ backgroundColor: sw.hex }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Badge Letter Color */}
+                  <div className="p-3 rounded-xl bg-slate-950 border border-slate-800 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <span className="font-bold text-slate-200 text-[11px]">Cor da Insígnia Superior</span>
+                      <div className="flex items-center gap-1.5">
+                        <input
+                          type="color"
+                          value={slideBadgeColor}
+                          onChange={(e) => setSlideBadgeColor(e.target.value)}
+                          className="w-6 h-6 rounded cursor-pointer border border-white/20 bg-transparent"
+                        />
+                        <span className="font-mono text-[10px] text-slate-400">{slideBadgeColor}</span>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-1.5">
+                      {LETTER_COLOR_SWATCHES.map((sw) => (
+                        <button
+                          key={`bc-${sw.hex}`}
+                          type="button"
+                          onClick={() => setSlideBadgeColor(sw.hex)}
+                          title={sw.label}
+                          className={`w-5 h-5 rounded-full border transition ${
+                            slideBadgeColor.toUpperCase() === sw.hex
+                              ? 'border-white scale-115 ring-2 ring-amber-400'
+                              : 'border-white/30 opacity-80 hover:opacity-100'
+                          }`}
+                          style={{ backgroundColor: sw.hex }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -2832,20 +3390,6 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="font-bold text-blue-300 block mb-1">Tema Visual de Cor</label>
-                  <select
-                    value={slideGradientPreset}
-                    onChange={(e) => setSlideGradientPreset(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white"
-                  >
-                    <option value="blue">Azul &amp; Esmeralda (Tecnologia &amp; M-Pesa)</option>
-                    <option value="purple">Púrpura &amp; Rosa (Inovação POS)</option>
-                    <option value="emerald">Verde Esmeralda (Finanças &amp; SIMO)</option>
-                    <option value="sunset">Sunset Âmbar &amp; Dourado (Comércio)</option>
-                  </select>
-                </div>
-
-                <div>
                   <label className="font-bold text-blue-300 block mb-1">Ordem no Slider</label>
                   <input
                     type="number"
@@ -2854,6 +3398,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                     onChange={(e) => setSlideOrder(parseInt(e.target.value) || 1)}
                     className="w-full px-3 py-2 rounded-xl bg-slate-900 border border-slate-700 text-white"
                   />
+                </div>
+
+                <div className="flex items-end">
+                  <label className="flex items-center gap-2 cursor-pointer p-2.5 rounded-xl bg-slate-900 border border-slate-800 w-full">
+                    <input
+                      type="checkbox"
+                      checked={slideIsActive}
+                      onChange={(e) => setSlideIsActive(e.target.checked)}
+                      className="rounded text-emerald-500"
+                    />
+                    <span className="font-bold text-slate-200">Slide Ativo no Banner Principal</span>
+                  </label>
                 </div>
               </div>
 
@@ -2887,11 +3443,11 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                 </div>
               </div>
 
-              {/* Live Kinetic Typography Preview box */}
-              <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 text-center space-y-2">
-                <div className="flex items-center justify-between mb-1">
-                  <span className="text-[10px] uppercase font-bold text-blue-400">
-                    Pré-visualização da Animação Cinética de Letras
+              {/* Live Full-Bleed Image + Custom Animated & Colored Letters Preview box */}
+              <div className="p-4 bg-slate-900/90 rounded-2xl border border-slate-800 space-y-3">
+                <div className="flex items-center justify-between">
+                  <span className="text-[10px] uppercase font-bold text-emerald-400">
+                    Pré-visualização em Tempo Real (Imagem + Animação + Cores das Letras)
                   </span>
                   <button
                     type="button"
@@ -2903,13 +3459,64 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   </button>
                 </div>
 
-                <div key={previewAnimKey} className="py-2">
-                  <span className="text-sm font-bold text-white block">
-                    {slideTitle || 'Título de Exemplo'}
-                  </span>
-                  <span className="text-base font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 via-sky-300 to-emerald-400 animate-shimmer-text block">
-                    {slideHighlightWord || 'Palavra Animada'}
-                  </span>
+                <div
+                  key={previewAnimKey}
+                  className="relative rounded-2xl overflow-hidden border border-white/20 p-6 text-center min-h-[160px] flex flex-col items-center justify-center bg-slate-950"
+                >
+                  {slideImageUrl && (
+                    <img
+                      src={slideImageUrl}
+                      alt="Preview do Slide"
+                      className="absolute inset-0 w-full h-full object-cover"
+                    />
+                  )}
+                  <div className="absolute inset-0 bg-gradient-to-b from-slate-950/65 via-slate-950/50 to-slate-950/75" />
+                  <div className="relative z-10 space-y-1.5 max-w-lg mx-auto">
+                    {slideBadge && (
+                      <span
+                        className="inline-block px-2.5 py-0.5 rounded-full bg-slate-950/70 border text-[10px] font-bold"
+                        style={{
+                          color: slideBadgeColor,
+                          borderColor: `${slideBadgeColor}55`,
+                        }}
+                      >
+                        {slideBadge}
+                      </span>
+                    )}
+                    <div className="text-sm sm:text-base font-black block drop-shadow">
+                      {renderAnimatedWords(
+                        slideTitle || 'Título de Exemplo',
+                        getSlideLetterAnimClass(slideTextAnimation),
+                        slideTitleColor,
+                        0,
+                        22,
+                        500
+                      )}
+                    </div>
+                    {slideHighlightWord && (
+                      <div className="text-base sm:text-lg font-black block drop-shadow">
+                        {renderAnimatedWords(
+                          slideHighlightWord,
+                          getSlideLetterAnimClass(slideTextAnimation),
+                          slideHighlightColor || undefined,
+                          180,
+                          24,
+                          700,
+                          !slideHighlightColor
+                            ? 'bg-gradient-to-r from-blue-400 via-sky-300 to-emerald-400 bg-clip-text text-transparent animate-shimmer-text'
+                            : ''
+                        )}
+                      </div>
+                    )}
+                    {slideSubtitle && (
+                      <p
+                        className="text-[11px] line-clamp-2"
+                        style={{ color: slideSubtitleColor }}
+                      >
+                        {slideSubtitle}
+                      </p>
+                    )}
+                  </div>
                 </div>
               </div>
 
@@ -2925,7 +3532,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({
                   type="submit"
                   className="px-6 py-2 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl shadow-lg shadow-rose-900/40"
                 >
-                  Gravar Slide
+                  Gravar Imagem, Letras, Animação &amp; Cores
                 </button>
               </div>
             </form>

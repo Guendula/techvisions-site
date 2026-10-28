@@ -9,6 +9,7 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Sistema completo para padarias e pastelarias: controlo de fornadas, cálculo de custos por receita (farinha, fermento), vendas rápidas no balcão e encomendas de bolos.',
     fullDescription: 'Desenvolvido especificamente para o setor de panificação em Moçambique. Permite controlar o consumo de matéria-prima por saco de farinha, gerar ordens de produção para os mestres padeiros, monitorar quebras e vender pão por unidade ou peso com impressão instantânea de recibo.',
     demoUrl: 'https://demo.techvisions.co.mz/padaria',
+    videoUrl: 'https://www.youtube.com/watch?v=M7lc1UVf-VE',
     imageUrl: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&w=800&q=80',
     likesCount: 142,
     demoType: 'bakery',
@@ -29,6 +30,28 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Impressora Térmica 58/80mm', 'Gaveta de Dinheiro', 'Balança Digital'],
       languages: ['Português'],
     },
+    faqs: [
+      {
+        question: 'Como o sistema controla o consumo de sacos de farinha de 50kg por fornada?',
+        answer: 'Cada receita tem uma ficha técnica configurada. Ao lançar uma ordem de produção para os padeiros, o sistema desconta automaticamente a quantidade exata de farinha, fermento e açúcar do stock e compara com o total de pães saídos do forno.',
+        category: 'Produção & Receitas',
+      },
+      {
+        question: 'Posso continuar a vender pão quente no balcão se faltar energia ou internet?',
+        answer: 'Sim. O TechPadaria Pro funciona 100% offline em computadores portáteis, tablets Android e terminais POS com bateria interna, sincronizando todas as vendas assim que a ligação voltar.',
+        category: 'Operação Offline',
+      },
+      {
+        question: 'O sistema permite gerir encomendas de bolos de aniversário com sinal pago via M-Pesa?',
+        answer: 'Sim. Pode registar a encomenda com data e hora de recolha, cobrar 50% de sinal via M-Pesa ou E-Mola no ato do pedido e liquidar o valor restante na entrega do bolo.',
+        category: 'Encomendas & M-Pesa',
+      },
+      {
+        question: 'É compatível com balanças digitais e impressoras térmicas de senhas?',
+        answer: 'Totalmente compatível com balanças eletrónicas de balcão e impressoras térmicas de 58mm e 80mm para emissão instantânea de talões e senhas de atendimento.',
+        category: 'Hardware & Balcão',
+      },
+    ],
   },
   {
     id: 'tv-sys-mercearia',
@@ -38,6 +61,7 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Gestão ágil para mercearias e minimercados: caixa rápido, leitura de código de barras, vendas a prazo (caderno de crédito/fiado de clientes) e alertas de reposição.',
     fullDescription: 'Ideal para o comércio diário de produtos essenciais (arroz, óleo, sabão, bebidas). Inclui gestão de vendas fiado com histórico de pagamentos de clientes de confiança, relatórios diários de lucro bruto e suporte a gaveta de dinheiro USB/RJ11.',
     demoUrl: 'https://demo.techvisions.co.mz/mercearia',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
     imageUrl: 'https://images.unsplash.com/photo-1578916171728-46686eac8d58?auto=format&fit=crop&w=800&q=80',
     likesCount: 98,
     demoType: 'pos',
@@ -57,6 +81,28 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Leitor Código de Barras', 'Mini Impressora Bluetooth', 'Gaveta'],
       languages: ['Português'],
     },
+    faqs: [
+      {
+        question: 'Como funciona o módulo de Caderno de Crédito (Fiado Digital) para clientes do bairro?',
+        answer: 'Cada cliente possui um limite máximo de crédito configurável. Sempre que leva mercadoria a prazo, o saldo fica registado com data e hora, permitindo amortizações parciais ou totais por M-Pesa, E-Mola ou numerário.',
+        category: 'Gestão de Fiado',
+      },
+      {
+        question: 'Posso dar entrada de mercadoria em caixas ou fardos e vender à unidade no caixa?',
+        answer: 'Sim. O sistema faz a conversão automática de embalagens (fardos, caixas ou sacos de 25kg/50kg) para unidades ou quilos vendidos a retalho no balcão.',
+        category: 'Stock & Conversão',
+      },
+      {
+        question: 'O sistema avisa antes dos produtos lácteos e enlatados atingirem o prazo de validade?',
+        answer: 'Sim. Ao registar o lote e a validade na entrada da compra, o painel emite alertas visuais com 30, 15 e 7 dias de antecedência para evitar prejuízos.',
+        category: 'Validades & Alertas',
+      },
+      {
+        question: 'Funciona com leitor de código de barras USB ou sem fios?',
+        answer: 'Sim, basta ligar qualquer leitor de código de barras 1D ou 2D (USB ou Bluetooth) para passar os artigos imediatamente sem configuração complexa.',
+        category: 'Equipamentos',
+      },
+    ],
   },
   {
     id: 'tv-sys-ferragens',
@@ -66,6 +112,7 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Software robusto para lojas de ferragens, cimento, varões e tintas: conversão de medidas (metros, quilos, sacos), orçamentos em PDF e gestão de entregas em obras.',
     fullDescription: 'Gerencie milhares de artigos com facilidade: parafusos, tubos, ferramentas elétricas e materiais pesados. Gere cotações profissionais com logotipo para empreiteiros e clientes particulares com envio automático por email.',
     demoUrl: 'https://demo.techvisions.co.mz/ferragens',
+    videoUrl: 'https://www.youtube.com/watch?v=M7lc1UVf-VE',
     imageUrl: 'https://images.unsplash.com/photo-1581783898377-1c85bf937427?auto=format&fit=crop&w=800&q=80',
     likesCount: 76,
     demoType: 'inventory',
@@ -85,6 +132,28 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Impressora A4 e Térmica', 'Leitor Laser', 'Terminal POS'],
       languages: ['Português'],
     },
+    faqs: [
+      {
+        question: 'Posso converter uma Fatura Proforma (Cotação de Obra) em venda definitiva sem redigitar tudo?',
+        answer: 'Sim. Com apenas 1 clique converte qualquer cotação aprovada pelo empreiteiro em Fatura-Recibo e Guia de Remessa pronta para o motorista entregar no estaleiro.',
+        category: 'Proformas & Obras',
+      },
+      {
+        question: 'Como o sistema lida com produtos vendidos a metro, quilo ou camião (areia, brita, cabos)?',
+        answer: 'Suporta múltiplas unidades de medida fracionadas (metro linear, m², m³, kg, barra ou saco), descontando com exatidão do stock principal do estaleiro.',
+        category: 'Unidades & Medidas',
+      },
+      {
+        question: 'Permite levantamentos parciais quando o cliente paga 100 sacos de cimento mas levanta aos poucos?',
+        answer: 'Sim. O módulo de entregas fracionadas controla quantos sacos já foram levantados e quantos ainda restam entregar ao cliente.',
+        category: 'Logística de Estaleiro',
+      },
+      {
+        question: 'Imprime tanto em folha A4 para empresas como em talão térmico de balcão?',
+        answer: 'Sim, suporta impressão dupla: documentos A4 formais com NUIT e IVA 16% para construtoras e talão térmico de 80mm para vendas rápidas de balcão.',
+        category: 'Faturação & Impressão',
+      },
+    ],
   },
   {
     id: 'tv-sys-restaurante',
@@ -94,6 +163,7 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Sistema completo para restaurantes, bares e lounges: mapa de mesas interativo, divisão de contas, comandas digitais para cozinha e controlo rigoroso de bebidas.',
     fullDescription: 'Aumente a rotação de clientes e elimine perdas no bar. Os garçons realizam pedidos diretamente no smartphone ou tablet e os pratos saem instantaneamente no ecrã ou impressora da cozinha.',
     demoUrl: 'https://demo.techvisions.co.mz/restaurante',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
     imageUrl: 'https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?auto=format&fit=crop&w=800&q=80',
     likesCount: 189,
     demoType: 'restaurant',
@@ -113,6 +183,28 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Ecrã de Cozinha (KDS)', 'Impressoras de Rede', 'Tablets'],
       languages: ['Português', 'Inglês'],
     },
+    faqs: [
+      {
+        question: 'Os garçons precisam de internet para enviar pedidos da mesa para a cozinha e o bar?',
+        answer: 'Não precisa de internet externa. Basta uma rede Wi-Fi local no restaurante para que os telemóveis dos garçons enviem os pedidos diretamente para as impressoras da cozinha e do bar.',
+        category: 'Comanda Mobile',
+      },
+      {
+        question: 'Como funciona a divisão de conta quando um grupo de amigos quer pagar separado?',
+        answer: 'No fecho da mesa pode dividir a conta em partes iguais ou selecionar exatamente o que cada cliente consumiu, aceitando pagamento misto (M-Pesa, E-Mola, TPA e numerário).',
+        category: 'Fecho de Mesa',
+      },
+      {
+        question: 'Como evitar desvios de cervejas e bebidas espirituosas no balcão do bar?',
+        answer: 'Nenhuma bebida sai do bar sem registo de comanda e o stock baixa automaticamente a cada garrafa ou dose vendida, gerando o relatório de auditoria no fecho da noite.',
+        category: 'Controlo de Bar',
+      },
+      {
+        question: 'É possível configurar preços promocionais automáticos para Happy Hour?',
+        answer: 'Sim. Pode agendar dias e horários específicos em que cervejas, petiscos ou cocktails assumem automaticamente o preço promocional de Happy Hour.',
+        category: 'Promoções & Salão',
+      },
+    ],
   },
   {
     id: 'tv-sys-roupas',
@@ -122,6 +214,7 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Gestão visual de vestuário por grade de tamanho (S, M, L, XL) e cor, etiquetagem personalizada, trocas/devoluções e catálogo de coleções sazonais.',
     fullDescription: 'Controle com precisão cada modelo por variantes de tamanho e cor. Imprima etiquetas térmicas com código de barras próprio e acompanhe as peças mais vendidas da estação.',
     demoUrl: 'https://demo.techvisions.co.mz/roupas',
+    videoUrl: 'https://www.youtube.com/watch?v=M7lc1UVf-VE',
     imageUrl: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?auto=format&fit=crop&w=800&q=80',
     likesCount: 84,
     demoType: 'pos',
@@ -141,6 +234,28 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Impressora de Etiquetas Zebra', 'Leitor 2D', 'Gaveta'],
       languages: ['Português'],
     },
+    faqs: [
+      {
+        question: 'Como sei rapidamente se tenho um modelo disponível num determinado tamanho e cor?',
+        answer: 'A grade matricial mostra num único ecrã todas as quantidades disponíveis por tamanho (S, M, L, XL ou numeração de calçado) e cor na loja e no armazém.',
+        category: 'Grade de Tamanhos',
+      },
+      {
+        question: 'O sistema gera etiquetas de código de barras para peças que chegam sem código?',
+        answer: 'Sim. O TechModa gera e imprime etiquetas personalizadas com o nome da boutique, tamanho, preço em MZN e código de barras pronto para leitura.',
+        category: 'Etiquetagem',
+      },
+      {
+        question: 'Como são processadas as trocas de roupa sem alterar o fecho de caixa do dia?',
+        answer: 'Ao bipar o talão de troca, a peça devolvida regressa ao stock e o sistema emite um vale ou abate automaticamente o valor na nova peça escolhida pelo cliente.',
+        category: 'Trocas & Vales',
+      },
+      {
+        question: 'Calcula comissões individuais para cada vendedora da loja?',
+        answer: 'Sim. Cada venda é associada ao código da vendedora e o relatório mensal apura automaticamente o valor exato de comissões sobre as metas atingidas.',
+        category: 'Equipa & Comissões',
+      },
+    ],
   },
   {
     id: 'tv-sys-supermercado',
@@ -150,6 +265,7 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Solução corporativa para redes e supermercados com múltiplos caixas simultâneos, sincronização de retaguarda, fidelização de clientes e pesagem no checkout.',
     fullDescription: 'Projetado para alto tráfego com tolerância a falhas. Cada operador de caixa opera com segurança mesmo se a internet cair, sincronizando automaticamente os dados com a sede fiscal.',
     demoUrl: 'https://demo.techvisions.co.mz/supermercado',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
     imageUrl: 'https://images.unsplash.com/photo-1542838132-92c53300491e?auto=format&fit=crop&w=800&q=80',
     likesCount: 167,
     demoType: 'pos',
@@ -169,6 +285,28 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Balança de Checkout', 'Scanner Bi-Óptico', 'Display de Cliente'],
       languages: ['Português'],
     },
+    faqs: [
+      {
+        question: 'Quantos terminais de caixa (checkouts) podem funcionar em simultâneo na mesma loja?',
+        answer: 'A arquitetura multi-caixa suporta desde 2 até mais de 30 terminais de checkout em simultâneo, todos sincronizados em tempo real com o servidor local e a nuvem.',
+        category: 'Multi-Caixa',
+      },
+      {
+        question: 'O operador de caixa pode cancelar um item já registado sem autorização?',
+        answer: 'Não. Qualquer cancelamento de item, desconto especial ou abertura de gaveta exige senha ou cartão do supervisor de loja, ficando tudo gravado no log de auditoria.',
+        category: 'Segurança & Auditoria',
+      },
+      {
+        question: 'Lê códigos de barras de peso gerados pelas balanças do talho e da secção de frutas?',
+        answer: 'Sim. Reconhece automaticamente etiquetas EAN-13 com prefixo de peso ou preço emitidas por balanças Toledo, Filizola, Dibal e similares.',
+        category: 'Balanças & Talho',
+      },
+      {
+        question: 'Como funciona a atualização de preços para todos os caixas do supermercado?',
+        answer: 'Basta atualizar o preço na retaguarda central ou importar a fatura do fornecedor para que todos os checkouts e etiquetas de prateleira recebam o novo preço imediatamente.',
+        category: 'Retaguarda Central',
+      },
+    ],
   },
   {
     id: 'tv-sys-stock',
@@ -178,6 +316,7 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Controlo total de armazéns centrais e filiais: entradas por guia de fornecedor, transferências entre lojas, auditoria por contagem cega e valorização de inventário (FIFO/PMP).',
     fullDescription: 'Acabe com as discrepâncias de mercadoria. Monitore localizações físicas em corredores e prateleiras, gere ordens de separação de mercadoria e receba alertas de rutura de stock.',
     demoUrl: 'https://demo.techvisions.co.mz/stock',
+    videoUrl: 'https://www.youtube.com/watch?v=M7lc1UVf-VE',
     imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=800&q=80',
     likesCount: 115,
     demoType: 'inventory',
@@ -197,6 +336,28 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Coletores de Dados Android', 'Impressoras de Etiquetas'],
       languages: ['Português'],
     },
+    faqs: [
+      {
+        question: 'Como funciona a transferência de mercadoria entre o armazém central e as lojas filiais?',
+        answer: 'O armazém central emite uma Guia de Transferência e o stock fica "em trânsito" até que o gerente da filial confirme a receção física dos artigos no destino.',
+        category: 'Multi-Armazém',
+      },
+      {
+        question: 'O que é a contagem cega de inventário por telemóvel ou coletor de dados?',
+        answer: 'O fiel de armazém conta os produtos nas prateleiras sem ver a quantidade teórica do sistema, evitando fraudes e apontando imediatamente qualquer diferença.',
+        category: 'Auditoria & Inventário',
+      },
+      {
+        question: 'Como o sistema calcula o custo real dos produtos importados com frete e alfândega?',
+        answer: 'Permite ratear despesas de transporte, direitos aduaneiros e estiva sobre os artigos da fatura, atualizando automaticamente o Custo Médio Ponderado (PMP).',
+        category: 'Custos & Importação',
+      },
+      {
+        question: 'É possível organizar os produtos por corredor, estante, nível e gaveta?',
+        answer: 'Sim. Cada artigo tem o seu endereço logístico exato para acelerar a separação de encomendas (picking) e a arrumação no armazém.',
+        category: 'Endereçamento',
+      },
+    ],
   },
   {
     id: 'tv-sys-servicos',
@@ -206,6 +367,7 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Gestão de ordens de trabalho, orçamentos e faturação para oficinas mecânicas, assistência técnica de computadores, eletricistas, consultorias e prestadores de serviços.',
     fullDescription: 'Acompanhe o estado de cada serviço desde a entrada do equipamento até a entrega. Atribua técnicos responsáveis, lance peças utilizadas e emita recibos de garantia.',
     demoUrl: 'https://demo.techvisions.co.mz/servicos',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoy.mp4',
     imageUrl: 'https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=800&q=80',
     likesCount: 63,
     demoType: 'pos',
@@ -225,6 +387,28 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Impressora A4', 'Assinatura Digital'],
       languages: ['Português'],
     },
+    faqs: [
+      {
+        question: 'Posso separar na mesma fatura o valor das peças aplicadas e o valor da mão-de-obra?',
+        answer: 'Sim. Cada Ordem de Trabalho detalha separadamente as peças consumidas do stock e as horas ou serviços técnicos executados, facilitando a faturação e a garantia.',
+        category: 'Ordens de Trabalho',
+      },
+      {
+        question: 'O cliente recebe aviso quando o equipamento ou viatura está pronto para levantar?',
+        answer: 'Sim. Ao mudar o estado da O.T. para "Concluído", o sistema gera uma notificação pronta para envio por WhatsApp ou SMS com o valor total a pagar.',
+        category: 'Notificações Cliente',
+      },
+      {
+        question: 'Como gerir contratos de manutenção mensal (avenças) com empresas?',
+        answer: 'O módulo de contratos gera automaticamente as faturas mensais recorrentes e agenda as visitas técnicas preventivas da sua equipa.',
+        category: 'Contratos Mensais',
+      },
+      {
+        question: 'O sistema emite termo de garantia na entrega do serviço?',
+        answer: 'Sim, imprime o certificado de garantia com o número de série do equipamento, peças substituídas, prazo de cobertura e assinatura do cliente.',
+        category: 'Garantia Técnica',
+      },
+    ],
   },
   {
     id: 'tv-sys-ecommerce',
@@ -234,7 +418,8 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Plataforma de comércio eletrónico pronta com catálogo interativo, cálculo de frete por bairro em Maputo/Matola, e pagamentos integrados com M-Pesa, E-Mola e Cartão.',
     fullDescription: 'Tenha o seu e-commerce a funcionar em 48 horas. Os pedidos chegam diretamente no WhatsApp da sua loja com detalhes do pagamento já verificado e morada de entrega no Google Maps.',
     demoUrl: 'https://demo.techvisions.co.mz/ecommerce',
-    imageUrl: 'https://images.unsplash.com/photo-1556742049-0a67c5574f73?auto=format&fit=crop&w=800&q=80',
+    videoUrl: 'https://www.youtube.com/watch?v=M7lc1UVf-VE',
+    imageUrl: 'https://images.unsplash.com/photo-1563013544-824ae1b704d3?auto=format&fit=crop&w=800&q=80',
     likesCount: 154,
     demoType: 'ecommerce',
     features: [
@@ -253,6 +438,28 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Dispositivos Móveis', 'Impressora de Etiquetas de Envio'],
       languages: ['Português', 'Inglês'],
     },
+    faqs: [
+      {
+        question: 'Como o cliente paga com M-Pesa ou E-Mola na loja online?',
+        answer: 'Ao finalizar a compra, o cliente introduz o número Vodacom ou Movitel e recebe imediatamente a solicitação STK Push no telemóvel para confirmar com o PIN, aprovando o pedido em segundos.',
+        category: 'Checkout M-Pesa/E-Mola',
+      },
+      {
+        question: 'Posso configurar taxas de entrega diferentes por bairro em Maputo, Matola e províncias?',
+        answer: 'Sim. Pode definir tabelas de frete personalizadas por zona (ex.: Polana, Sommerschield, Zimpeto, Matola Rio) ou entrega gratuita acima de um determinado valor.',
+        category: 'Entregas & Bairros',
+      },
+      {
+        question: 'Os pedidos da loja online sincronizam com o stock da minha loja física?',
+        answer: 'Sim. Sempre que um artigo é vendido online, o stock é reservado automaticamente para evitar vender um produto que já esgotou no balcão.',
+        category: 'Stock Sincronizado',
+      },
+      {
+        question: 'A loja funciona bem nos telemóveis dos clientes mesmo com internet móvel 3G/4G?',
+        answer: 'Sim, a tecnologia PWA com compressão automática de imagens garante carregamento ultra-rápido em qualquer smartphone Android ou iPhone.',
+        category: 'Performance Mobile',
+      },
+    ],
   },
   {
     id: 'tv-sys-financeiro',
@@ -262,6 +469,7 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
     description: 'Controlo financeiro completo: contas a pagar e receber, fluxo de caixa diário, reconciliação bancária (BIM, BCI, Standard Bank), cálculo de IVA 16% e relatórios contábeis.',
     fullDescription: 'Mantenha a saúde financeira da sua empresa 100% transparente. Emita faturas certificadas, recibos de quitação e exporte mapas fiscais para o seu contabilista.',
     demoUrl: 'https://demo.techvisions.co.mz/financeiro',
+    videoUrl: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerMeltdowns.mp4',
     imageUrl: 'https://images.unsplash.com/photo-1554224155-8d04cb21cd6c?auto=format&fit=crop&w=800&q=80',
     likesCount: 112,
     demoType: 'pos',
@@ -281,5 +489,27 @@ export const INITIAL_SYSTEMS: SystemProduct[] = [
       hardwareSupport: ['Impressora Laser A4', 'Certificado Digital'],
       languages: ['Português'],
     },
+    faqs: [
+      {
+        question: 'O sistema calcula automaticamente o IVA a 16% e gera mapas para a Autoridade Tributária?',
+        answer: 'Sim. Todas as faturas, notas de débito/crédito e recibos apuram automaticamente o IVA de 16% (ou regimes de isenção) e exportam os mapas mensais prontos para o contabilista.',
+        category: 'Fiscalidade & IVA 16%',
+      },
+      {
+        question: 'Como funciona a reconciliação com contas bancárias (Millennium BIM, BCI, Standard Bank)?',
+        answer: 'Pode gerir múltiplas contas bancárias e carteiras M-Pesa/E-Mola num único painel, conciliando extratos com as faturas pagas pelos clientes.',
+        category: 'Bancos & Tesouraria',
+      },
+      {
+        question: 'Posso controlar despesas fixas da empresa como renda, salários, EDM e águas?',
+        answer: 'Sim. O módulo de Contas a Pagar alerta sobre vencimentos futuros e alimenta automaticamente a Demonstração de Resultados (DRE) para mostrar o lucro líquido real.',
+        category: 'Contas a Pagar & DRE',
+      },
+      {
+        question: 'Permite definir permissões diferentes para o faturista, o financeiro e o diretor?',
+        answer: 'Sim. O controlo de acessos por perfil garante que cada colaborador aceda apenas aos módulos autorizados, com registo completo de auditoria.',
+        category: 'Segurança & Perfis',
+      },
+    ],
   },
 ];

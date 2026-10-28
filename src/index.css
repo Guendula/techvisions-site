@@ -18,6 +18,91 @@
   }
 }
 
+@keyframes typewriterLetter {
+  0% {
+    opacity: 0;
+    transform: translateY(6px) scale(0.85);
+  }
+  50% {
+    opacity: 1;
+    transform: translateY(0px) scale(1.08);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px) scale(1);
+  }
+}
+
+@keyframes waveLetter {
+  0% {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-7px);
+  }
+  65% {
+    opacity: 1;
+    transform: translateY(4px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0px);
+  }
+}
+
+@keyframes zoomPopLetter {
+  0% {
+    opacity: 0;
+    transform: scale(0.2) rotate(-8deg);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.18) rotate(2deg);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) rotate(0deg);
+  }
+}
+
+@keyframes slideLeftLetter {
+  0% {
+    opacity: 0;
+    transform: translateX(-36px) skewX(-12deg);
+    filter: blur(3px);
+  }
+  70% {
+    opacity: 1;
+    transform: translateX(4px) skewX(2deg);
+    filter: blur(0px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0px) skewX(0deg);
+    filter: blur(0px);
+  }
+}
+
+@keyframes glowPulseLetter {
+  0% {
+    opacity: 0;
+    transform: scale(0.92);
+    filter: brightness(2) drop-shadow(0 0 18px currentColor);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.04);
+    filter: brightness(1.35) drop-shadow(0 0 12px currentColor);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1) drop-shadow(0 0 6px currentColor);
+  }
+}
+
 @keyframes shimmerGradient {
   0% {
     background-position: 0% 50%;
@@ -51,9 +136,35 @@
   }
 }
 
-.animate-kinetic-letter {
+.animate-kinetic-letter,
+.animate-letter-kinetic {
   display: inline-block;
   animation: kineticLetter 0.6s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+.animate-letter-typewriter {
+  display: inline-block;
+  animation: typewriterLetter 0.35s steps(2, end) both;
+}
+
+.animate-letter-wave {
+  display: inline-block;
+  animation: waveLetter 0.85s ease-in-out both;
+}
+
+.animate-letter-zoom-pop {
+  display: inline-block;
+  animation: zoomPopLetter 0.55s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.animate-letter-slide-left {
+  display: inline-block;
+  animation: slideLeftLetter 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-letter-glow-pulse {
+  display: inline-block;
+  animation: glowPulseLetter 0.75s ease-out both;
 }
 
 .animate-shimmer-text {
@@ -70,4 +181,25 @@
 
 .animate-ken-burns {
   animation: kenBurnsSubtle 14s ease-in-out infinite alternate;
+}
+
+@keyframes scrollLeftToRight {
+  0% {
+    transform: translate3d(-50%, 0, 0);
+  }
+  100% {
+    transform: translate3d(0%, 0, 0);
+  }
+}
+
+.animate-news-ltr {
+  display: flex;
+  width: max-content;
+  animation: scrollLeftToRight 36s linear infinite;
+  will-change: transform;
+}
+
+.animate-news-ltr:hover,
+.animate-news-ltr.is-paused {
+  animation-play-state: paused;
 }

@@ -14,6 +14,35 @@ export type PaymentMethod = 'MPESA' | 'EMOLA' | 'VISA';
 
 export type PaymentStatus = 'PENDING' | 'PROCESSING' | 'SUCCESS' | 'FAILED';
 
+export interface SystemAdvantage {
+  title: string;
+  description: string;
+  metric?: string;
+}
+
+export interface SystemOfferedCategory {
+  name: string;
+  description: string;
+  badge?: string;
+}
+
+export interface SystemDemoVideo {
+  id: string;
+  title: string;
+  duration: string;
+  category: string;
+  description: string;
+  videoUrl?: string;
+  thumbnailUrl?: string;
+  steps?: string[];
+}
+
+export interface SystemFaqItem {
+  question: string;
+  answer: string;
+  category?: string;
+}
+
 export interface SystemProduct {
   id: string;
   title: string;
@@ -21,6 +50,12 @@ export interface SystemProduct {
   price: number; // in MZN (Meticais)
   description: string;
   fullDescription?: string;
+  videoUrl?: string;
+  whatItDoes?: string[];
+  advantages?: SystemAdvantage[];
+  offeredCategories?: SystemOfferedCategory[];
+  demoVideos?: SystemDemoVideo[];
+  faqs?: SystemFaqItem[];
   demoUrl: string;
   imageUrl: string;
   likesCount: number;
@@ -171,6 +206,14 @@ export interface NavigationMenuItem {
   highlight?: boolean;
 }
 
+export type SlideTextAnimation =
+  | 'kinetic'
+  | 'typewriter'
+  | 'wave'
+  | 'zoom-pop'
+  | 'slide-left'
+  | 'glow-pulse';
+
 export interface HeroSlide {
   id: string;
   badge: string;
@@ -186,6 +229,11 @@ export interface HeroSlide {
   gradientVia: string;
   gradientTo: string;
   accentColor: string;
+  textAnimation?: SlideTextAnimation;
+  titleColor?: string;
+  highlightColor?: string;
+  subtitleColor?: string;
+  badgeColor?: string;
   statsPills: Array<{
     id: string;
     icon: string;
